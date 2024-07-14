@@ -46,10 +46,10 @@ public class GroceryApiWithoutBaseClass {
 		Response post = RestAssured.given().baseUri(baseUri).contentType(ContentType.JSON).body(requestBody.toString())
 				.post(endPont);
 		System.out.println(post.getStatusCode());
-		System.out.println(post.asPrettyString());
+//		System.out.println(post.asPrettyString());
 	}
 
-	@Test(priority = 2, enabled = true)
+	@Test(priority = 2, enabled = false)
 	public void loginWithApiKey() {
 		String endPoint = "/loginWithApiKey";
 		JSONObject requestBody = new JSONObject();
@@ -63,7 +63,7 @@ public class GroceryApiWithoutBaseClass {
 		System.out.println(response.asPrettyString());
 	}
 
-	@Test(priority = 3, enabled = true)
+	@Test(priority = 3, enabled = false)
 	public void accessToken() {
 		String endPoint = "/accessToken";
 		List<Header> header = new ArrayList<Header>();
@@ -76,6 +76,43 @@ public class GroceryApiWithoutBaseClass {
 		Response response = RestAssured.given().headers(headers).baseUri(baseUri).contentType(ContentType.JSON)
 				.body(requestBody.toString()).post(endPoint);
 //		System.out.println(response.asPrettyString());
+		System.out.println(response.getStatusCode());
+	}
+
+	@Test(priority = 4, enabled = true)
+	public void forgotPassword() {
+		String endPoint = "/forgotPassword";
+		List<Header> headers = new ArrayList<Header>();
+		headers.add(new Header("accept", "application/json"));
+		headers.add(new Header("Content-Type", "application/json"));
+		Headers headers2 = new Headers(headers);
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("forgot_email", "srinipmps@gmail.com");
+		Response response = RestAssured.given().headers(headers2).contentType(ContentType.JSON).baseUri(baseUri)
+				.body(jsonObject.toString()).post(endPoint);
+//		System.out.println(response.asPrettyString());
+		JSONObject object = new JSONObject(response.asPrettyString());
+		Assert.assertEquals("Password Reset Link sent on your mail id.", object.get("message"),
+				"Verify the success message");
+		System.out.println(response.getStatusCode());
+
+	}
+
+	@Test(priority = 5, enabled = true)
+	public void updateDevice() {
+		String endPoint = "/updateDevice";
+		List<Header> header = new ArrayList<Header>();
+		header.add(new Header("accept", "application/json"));
+		header.add(new Header("Content-Type", "application/json"));
+		header.add(new Header("Authorization", "Bearer " + logToken));
+		Headers headers = new Headers(header);
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("device_id", ",kjhbgvfcdsfghj");
+		jsonObject.put("device_token", "sdfghjhgfd");
+		Response response = RestAssured.given().headers(headers).contentType(ContentType.JSON)
+				.body(jsonObject.toString()).baseUri(baseUri).put(endPoint);
+		JSONObject jsonObject2 = new JSONObject(response.asPrettyString());
+		Assert.assertEquals("Device ID updated successfully", jsonObject2.get("message"), "Verify the success message");
 		System.out.println(response.getStatusCode());
 	}
 
